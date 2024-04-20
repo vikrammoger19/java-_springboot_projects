@@ -1,0 +1,112 @@
+// user Table
+
+CREATE TABLE `users` (
+  `userId` varchar(20) NOT NULL,
+  `userName` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `mobNumber` decimal(10,0) NOT NULL,
+  `dOB` date NOT NULL,
+  `followers` decimal(30,0) DEFAULT '0',
+  `following` decimal(30,0) DEFAULT '0',
+  `description` varchar(100) DEFAULT NULL,
+  `verified` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`userId`),
+  UNIQUE KEY `mobNumber` (`mobNumber`)
+);
+
+//Hashtags Table
+
+CREATE TABLE `hashtags` (
+  `hashTagName` varchar(50) NOT NULL,
+  PRIMARY KEY (`hashTagName`)
+) ;
+
+//Tweets Table
+CREATE TABLE `tweets` (
+  `tweetId` int NOT NULL AUTO_INCREMENT,
+  `userId` varchar(20) DEFAULT NULL,
+  `hashTagName` varchar(50) NOT NULL,
+  `tweetTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  `content` varchar(200) NOT NULL,
+  `attachment` longblob,
+  `attachmentName` varchar(50) DEFAULT NULL,
+  `attachmentType` varchar(50) DEFAULT NULL,
+  `attachmentUrl` varchar(50) DEFAULT NULL,
+  `likes` decimal(50,0) DEFAULT NULL,
+  PRIMARY KEY (`tweetId`),
+  KEY `userId` (`userId`),
+  KEY `hashTagName` (`hashTagName`),
+  CONSTRAINT `tweets_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
+  CONSTRAINT `tweets_ibfk_2` FOREIGN KEY (`hashTagName`) REFERENCES `hashtags` (`hashTagName`)
+);
+
+//Profile Tables
+
+CREATE TABLE `profile` (
+  `userId` varchar(30) NOT NULL,
+  `fileName` varchar(30) DEFAULT NULL,
+  `fileType` varchar(30) DEFAULT NULL,
+  `photo` longblob,
+  PRIMARY KEY (`userId`),
+  CONSTRAINT `profile_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`)
+) ;
+
+
+
+// Comments Table
+CREATE TABLE `comments` (
+  `commentId` int NOT NULL,
+  `tweetId` int NOT NULL,
+  `userId` varchar(20) NOT NULL,
+  `content` varchar(100) NOT NULL,
+  `time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `attachment` longblob,
+  `hashTagName` varchar(50) DEFAULT NULL,
+  `attachmentType` varchar(50) DEFAULT NULL,
+  `attachmentName` varchar(50) DEFAULT NULL,
+  `attachmentUrl` varchar(50) DEFAULT NULL,
+  `likes` decimal(50,0) DEFAULT NULL,
+  PRIMARY KEY (`commentId`),
+  KEY `tweetId` (`tweetId`),
+  KEY `userId` (`userId`),
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`tweetId`) REFERENCES `tweets` (`tweetId`),
+  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`)
+);
+
+
+
+//Followers Table
+
+
+CREATE TABLE `followers` (
+  `followerId` varchar(50) NOT NULL,
+  `userId` varchar(50) NOT NULL,
+  PRIMARY KEY (`userId`,`followerId`),
+  KEY `followerId` (`followerId`),
+  CONSTRAINT `followers_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
+  CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`followerId`) REFERENCES `users` (`userId`)
+);
+
+// Following Table
+
+CREATE TABLE `following` (
+  `followingId` varchar(50) NOT NULL,
+  `userId` varchar(50) NOT NULL,
+  PRIMARY KEY (`userId`,`followingId`),
+  KEY `followingId` (`followingId`),
+  CONSTRAINT `following_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
+  CONSTRAINT `following_ibfk_2` FOREIGN KEY (`followingId`) REFERENCES `users` (`userId`)
+);
+
+
+//Likes Table
+
+CREATE TABLE `likes` (
+  `userId` varchar(20) NOT NULL,
+  `tweetId` int NOT NULL,
+  PRIMARY KEY (`userId`,`tweetId`),
+  KEY `tweetId` (`tweetId`),
+  CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
+  CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`tweetId`) REFERENCES `tweets` (`tweetId`)
+) ;
